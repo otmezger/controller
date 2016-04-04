@@ -1,0 +1,15 @@
+
+#define TYPE_DS18S20 0
+#define TYPE_DS18B20 1
+#define TYPE_DS18S22 2
+#define TYPE_MAX31850 3
+#define W1_BUS_PIN 5
+
+#define DO_DEBUG_MESSAGES 0
+#define DO_DEBUG_START_STOP_LOOP 0
+
+
+#define NMYSENSORS 6
+#define LEDPIN_OK 6
+
+#define CONTROLLER_ID "A1_0001"
