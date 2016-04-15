@@ -151,7 +151,23 @@ void loop() { // put your main code here, to run repeatedly:
      *    PARSE ID: G3JTRDta9I
      *    NAME: Nevera
      *    MACHINE: Nevera Principal @ olmo
+     
     */
+    byte thisAddress[8,5] = {(0x28, 0xF0, 0x49, 0xDD, 0x06, 0x00, 0x00, 0x3B),
+    (0x28, 0xBA, 0xBE, 0x5B, 0x06, 0x00, 0x00, 0xA6),
+    (0x28, 0x39, 0x7F, 0xDD, 0x06, 0x00, 0x00, 0x2A),
+    (0x28, 0x4F, 0x5B, 0x5C, 0x06, 0x00, 0x00, 0xB1),
+    (0x28, 0xAA, 0x47, 0xDD, 0x06, 0x00, 0x00, 0x78)}
+    string sensorLocation [5] = {"G3JTRDta9I","VBbBztL3IR","7q0kBqY2aT","zwiDCzlKUA","NMnCopzz5I"}
+    
+    for (short iSensor = 0; iSensor = 5; iSensor++){
+      {for (short ii = 0; ii < 8; ii++){
+        MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii,iSensor];}
+        MySensorDictionary[iSensor].sensorLocation = sensorLocation[iSensor];
+        MySensorDictionary[iSensor].dt_max = 25;
+      }
+    }
+    /*
     short iSensor = 0;
     //{byte thisAddress[8] = {0x28, 0x71, 0xAB, 0xB5, 0x05, 0x00, 0x00, 0xD7};
     {//byte thisAddress[8] = {0x28, 0x60, 0xAE, 0xCC, 0x05, 0x00, 0x00, 0x52};
@@ -166,7 +182,7 @@ void loop() { // put your main code here, to run repeatedly:
      *    NAME: Congelador
      *    MACHINE: Nevera Principal @ olmo
     */
-    iSensor ++;
+    /*iSensor ++;
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0x1F, 0xCE, 0xCC, 0x05, 0x00, 0x00, 0xFF};
     //byte thisAddress[8] = {0x28, 0x4C, 0x78, 0xCD, 0x05, 0x00, 0x00, 0xD4};
@@ -182,7 +198,7 @@ void loop() { // put your main code here, to run repeatedly:
      *    NAME: Caliente
      *    MACHINE: Nevera Principal @ olmo
     */
-    iSensor ++; // 28 D3 46 2C 6 0 0 45
+    /*iSensor ++; // 28 D3 46 2C 6 0 0 45
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
     byte thisAddress[8] = {0x28, 0x39, 0x7F, 0xDD, 0x06, 0x00, 0x00, 0x2A};
@@ -196,7 +212,7 @@ void loop() { // put your main code here, to run repeatedly:
      *    NAME: Ambiente
      *    MACHINE: Congelador 7 
     */
-    iSensor ++; // 28 4F 5B 5C 6 0 0 B1
+    /*iSensor ++; // 28 4F 5B 5C 6 0 0 B1
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
     byte thisAddress[8] = {0x28, 0x4F, 0x5B, 0x5C, 0x06, 0x00, 0x00, 0xB1};
@@ -210,7 +226,7 @@ void loop() { // put your main code here, to run repeatedly:
      *    NAME: Caliente
      *    MACHINE: Congelador 8 
     */
-    iSensor ++; //28 AA 47 DD 6 0 0 78
+    /*iSensor ++; //28 AA 47 DD 6 0 0 78
 
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
@@ -219,7 +235,7 @@ void loop() { // put your main code here, to run repeatedly:
     MySensorDictionary[iSensor].sensorLocation = (String) "NMnCopzz5I";
     MySensorDictionary[iSensor].dt_max = 25;
     }
-    
+    */
     
 
     Nsensors = findNumberOfSensorsInBus(ds);
