@@ -2,6 +2,7 @@
 // this program pushes the sensor data to a php api.
 
 #include <SPI.h> /// no idea what this is... I think it's mandatory.
+#include <TimerOne.h> //Librería de Timer para la interrupcion.
 //#include "/Users/olmo/Documents/Arduino/libraries/MAX31850_OneWire.h"
 //#include "OneWire.h" // i'd rather use this to include it in the folder
 #include <OneWire.h>  
@@ -87,6 +88,9 @@ void setup() {
   digitalWrite(ledPinOK, LOW);
   digitalWrite(ledPinKO, LOW);
   digitalWrite(ledPin, ledPinStatus);
+  Timer1.initialize(2000000); //Interrupción cada 2 segundos
+  Timer1.attachInterrupt(FuncionSensores); //Llama a la funcion que antes estaba en el loop
+  
 
         //digitalWrite(ledPinOK, HIGH);
       //digitalWrite(ledPinKO, HIGH);
@@ -96,12 +100,7 @@ void setup() {
   delay(1000); // not actually needed, just for stability... or whatever. no need to rush.
   // discoverOneWireDevices(); for finding 
 
-
-
-
 }
-
-
 
 
 /*
@@ -109,12 +108,8 @@ void setup() {
  * -------------------------------------------------------------------------------------- END
  */
 
-
-/*
-* -------------------------------------------------------------------------------------- START
-* MAIN LOOP
-*/
-void loop() { // put your main code here, to run repeatedly:
+void FuncionSensores(){
+ // put your main code here, to run repeatedly:
   // loop the LED
   ledPinStatus = !ledPinStatus;
   digitalWrite(ledPin, ledPinStatus);
@@ -227,7 +222,6 @@ void loop() { // put your main code here, to run repeatedly:
      *    MACHINE: Congelador 8 
     */
     /*iSensor ++; //28 AA 47 DD 6 0 0 78
-
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
     byte thisAddress[8] = {0x28, 0xAA, 0x47, 0xDD, 0x06, 0x00, 0x00, 0x78};
@@ -337,29 +331,20 @@ void loop() { // put your main code here, to run repeatedly:
     }
     delay(10);
   }
+}
 
 
+/*
+* -------------------------------------------------------------------------------------- START
+* MAIN LOOP
+*/
+void loop() {
+  //Vacio
 }
 /*
  * MAIN LOOP
  * -------------------------------------------------------------------------------------- END
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
