@@ -97,7 +97,7 @@ void setup() {
 
   //ds.reset();
   //Serial.println(" This Sensor ID= " + mySensor1.getSensorID());
-  delay(1000); // not actually needed, just for stability... or whatever. no need to rush.
+  //delay(1000); // not actually needed, just for stability... or whatever. no need to rush.
   // discoverOneWireDevices(); for finding 
 
 }
