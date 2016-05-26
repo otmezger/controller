@@ -14,3 +14,6 @@ To clone this project, use
 ```git clone git@github.com:otmezger/controller.git
 
 ```
+
+# Where does this code run?
+This code is tested in the Arduino Uno and Arduino Nano, but other Arduino boards might work as well. 
