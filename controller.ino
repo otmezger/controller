@@ -2,7 +2,6 @@
 // this program pushes the sensor data to a php api.
 
 #include <SPI.h> /// no idea what this is... I think it's mandatory.
-#include <TimerOne.h> //Librería de Timer para la interrupcion.
 //#include "/Users/olmo/Documents/Arduino/libraries/MAX31850_OneWire.h"
 //#include "OneWire.h" // i'd rather use this to include it in the folder
 #include <OneWire.h>  
@@ -11,7 +10,6 @@
 #include "SensorW1.h"
 
 boolean initialRun = true;
-
 short Nsensors = 0;
 
 
@@ -64,7 +62,6 @@ SensorW1 mySensor5("28-0065c5b4f","C1 c", 25);// Congelador -20 - caliente
 SensorW1 mySensor6("28-005ccce1f","ambiente", 25);// Congelador -20 - caliente
 SensorW1 mySensor7("3b-000187513","horno 1", 50); // horno
 SensorW1 mySensor8("3b-000187513","horno 1", 50); // horno
-
 */
 /*
  * DECLARE sensors
@@ -88,19 +85,21 @@ void setup() {
   digitalWrite(ledPinOK, LOW);
   digitalWrite(ledPinKO, LOW);
   digitalWrite(ledPin, ledPinStatus);
-  Timer1.initialize(2000000); //Interrupción cada 2 segundos
-  Timer1.attachInterrupt(FuncionSensores); //Llama a la funcion que antes estaba en el loop
-  
 
         //digitalWrite(ledPinOK, HIGH);
       //digitalWrite(ledPinKO, HIGH);
 
   //ds.reset();
   //Serial.println(" This Sensor ID= " + mySensor1.getSensorID());
-  //delay(1000); // not actually needed, just for stability... or whatever. no need to rush.
+  delay(500); // not actually needed, just for stability... or whatever. no need to rush.
   // discoverOneWireDevices(); for finding 
 
+
+
+
 }
+
+
 
 
 /*
@@ -108,8 +107,12 @@ void setup() {
  * -------------------------------------------------------------------------------------- END
  */
 
-void FuncionSensores(){
- // put your main code here, to run repeatedly:
+
+/*
+* -------------------------------------------------------------------------------------- START
+* MAIN LOOP
+*/
+void loop() { // put your main code here, to run repeatedly:
   // loop the LED
   ledPinStatus = !ledPinStatus;
   digitalWrite(ledPin, ledPinStatus);
@@ -146,29 +149,13 @@ void FuncionSensores(){
      *    PARSE ID: G3JTRDta9I
      *    NAME: Nevera
      *    MACHINE: Nevera Principal @ olmo
-     
     */
-    byte thisAddress[8,5] = {(0x28, 0xF0, 0x49, 0xDD, 0x06, 0x00, 0x00, 0x3B),
-    (0x28, 0xBA, 0xBE, 0x5B, 0x06, 0x00, 0x00, 0xA6),
-    (0x28, 0x39, 0x7F, 0xDD, 0x06, 0x00, 0x00, 0x2A),
-    (0x28, 0x4F, 0x5B, 0x5C, 0x06, 0x00, 0x00, 0xB1),
-    (0x28, 0xAA, 0x47, 0xDD, 0x06, 0x00, 0x00, 0x78)}
-    string sensorLocation [5] = {"G3JTRDta9I","VBbBztL3IR","7q0kBqY2aT","zwiDCzlKUA","NMnCopzz5I"}
-    
-    for (short iSensor = 0; iSensor = 5; iSensor++){
-      {for (short ii = 0; ii < 8; ii++){
-        MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii,iSensor];}
-        MySensorDictionary[iSensor].sensorLocation = sensorLocation[iSensor];
-        MySensorDictionary[iSensor].dt_max = 25;
-      }
-    }
-    /*
     short iSensor = 0;
     //{byte thisAddress[8] = {0x28, 0x71, 0xAB, 0xB5, 0x05, 0x00, 0x00, 0xD7};
     {//byte thisAddress[8] = {0x28, 0x60, 0xAE, 0xCC, 0x05, 0x00, 0x00, 0x52};
-    byte thisAddress[8] = {0x28, 0xF0, 0x49, 0xDD, 0x06, 0x00, 0x00, 0x3B};
+    byte thisAddress[8] = {0x28, 0x11, 0xC0, 0x29, 0x07, 0x00, 0x00, 0xC9};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "G3JTRDta9I";
+    MySensorDictionary[iSensor].sensorLocation = (String) "P9Vspkw3Gh";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
@@ -177,14 +164,14 @@ void FuncionSensores(){
      *    NAME: Congelador
      *    MACHINE: Nevera Principal @ olmo
     */
-    /*iSensor ++;
+    iSensor ++;
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0x1F, 0xCE, 0xCC, 0x05, 0x00, 0x00, 0xFF};
     //byte thisAddress[8] = {0x28, 0x4C, 0x78, 0xCD, 0x05, 0x00, 0x00, 0xD4};
-    byte thisAddress[8] = {0x28, 0xBA, 0xBE, 0x5B, 0x06, 0x00, 0x00, 0xA6};
+    byte thisAddress[8] = {0x28, 0xDE, 0xCB, 0x29, 0x07, 0x00, 0x00, 0x02};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
     //MySensorDictionary[iSensor].sensorLocation = (String) "fMft50HAD0";
-    MySensorDictionary[iSensor].sensorLocation = (String) "VBbBztL3IR";
+    MySensorDictionary[iSensor].sensorLocation = (String) "NA3Ci9LnsD";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
@@ -193,12 +180,12 @@ void FuncionSensores(){
      *    NAME: Caliente
      *    MACHINE: Nevera Principal @ olmo
     */
-    /*iSensor ++; // 28 D3 46 2C 6 0 0 45
+    iSensor ++; // 28 D3 46 2C 6 0 0 45
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x39, 0x7F, 0xDD, 0x06, 0x00, 0x00, 0x2A};
+    byte thisAddress[8] = {0x28, 0xC1, 0xC2, 0x29, 0x07, 0x00, 0x00, 0x8E};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "7q0kBqY2aT";
+    MySensorDictionary[iSensor].sensorLocation = (String) "afSzNSM0kQ";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
@@ -207,12 +194,12 @@ void FuncionSensores(){
      *    NAME: Ambiente
      *    MACHINE: Congelador 7 
     */
-    /*iSensor ++; // 28 4F 5B 5C 6 0 0 B1
+    iSensor ++; // 28 4F 5B 5C 6 0 0 B1
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x4F, 0x5B, 0x5C, 0x06, 0x00, 0x00, 0xB1};
+    byte thisAddress[8] = {0x28, 0xC9, 0x3D, 0xDD, 0x06, 0x00, 0x00, 0x32};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "zwiDCzlKUA";
+    MySensorDictionary[iSensor].sensorLocation = (String) "AjwYuCDaLr";
     MySensorDictionary[iSensor].dt_max = 25;
     }
         /*
@@ -221,15 +208,46 @@ void FuncionSensores(){
      *    NAME: Caliente
      *    MACHINE: Congelador 8 
     */
-    /*iSensor ++; //28 AA 47 DD 6 0 0 78
+    iSensor ++; //28 AA 47 DD 6 0 0 78
+
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
     //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xAA, 0x47, 0xDD, 0x06, 0x00, 0x00, 0x78};
+    byte thisAddress[8] = {0x28, 0x06, 0x1F, 0x29, 0x07, 0x00, 0x00, 0x26};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "NMnCopzz5I";
+    MySensorDictionary[iSensor].sensorLocation = (String) "HW23Srup8q";
     MySensorDictionary[iSensor].dt_max = 25;
     }
-    */
+
+    iSensor ++; //28 AA 47 DD 6 0 0 78
+
+    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
+    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
+    byte thisAddress[8] = {0x28, 0xED, 0xC8, 0x29, 0x07, 0x00, 0x00, 0xF8};
+    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
+    MySensorDictionary[iSensor].sensorLocation = (String) "sAEOCSFNer";
+    MySensorDictionary[iSensor].dt_max = 25;
+    }
+
+    iSensor ++; //28 AA 47 DD 6 0 0 78
+
+    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
+    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
+    byte thisAddress[8] = {0x28, 0x13, 0xA6, 0x29, 0x07, 0x00, 0x00, 0x2A};
+    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
+    MySensorDictionary[iSensor].sensorLocation = (String) "I7bqd64Wu5";
+    MySensorDictionary[iSensor].dt_max = 25;
+    }
+
+    iSensor ++; //28 AA 47 DD 6 0 0 78
+
+    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
+    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
+    byte thisAddress[8] = {0x28, 0xD3, 0xEC, 0xDD, 0x06, 0x00, 0x00, 0x35};
+    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
+    MySensorDictionary[iSensor].sensorLocation = (String) "ZDMOFZUCNN";
+    MySensorDictionary[iSensor].dt_max = 25;
+    }
+    
     
 
     Nsensors = findNumberOfSensorsInBus(ds);
@@ -304,7 +322,7 @@ void FuncionSensores(){
       if (!foundMatch){
         Serial.print(F("--- --- ---> Did not found anything for Sensor"));
         digitalWrite(ledPinKO, HIGH);
-        while (true){}// stop runtime
+        break;// stop runtime
       }
       // at this point, if the arduino continues, is because we matched all sensors with the library. this is good :-)
       // now let's build the objects.
@@ -322,29 +340,52 @@ void FuncionSensores(){
       Serial.println(F("------------- START"));
     }
     //digitalWrite(ledPinKO, HIGH);
+    //ti = millis();
+    //////////////////////////////////////////////////////////////////////
+    ds.reset();
+    ds.write(0xCC); //Skip ROM to broadcast to all sensors in bus.
+    //delay(100);
+    ds.write(0x44,1); //Start Temperature conversion (for all sensors at the same time after Skip ROM 
+    delay(750); //Delay for Temperature conversion at 12-bit resolution
+    //ds.depower(); //Release the one wire bus
+    //////////////////////////////////////////////////////////////////////
     for (short iSensor = 0; iSensor < Nsensors; iSensor++) {
+      //Serial.println(iSensor);
       SensorObjects[iSensor].updateTemperature(ds);
       SensorObjects[iSensor].checkAllValues();
     }
+    //t = millis() - ti;
+    //Serial.println("Tiempo: ");
+    //Serial.println(t);
+    
     if (DO_DEBUG_START_STOP_LOOP) {
       Serial.println(F("------------- END"));
     }
     delay(10);
   }
-}
 
 
-/*
-* -------------------------------------------------------------------------------------- START
-* MAIN LOOP
-*/
-void loop() {
-  //Vacio
 }
 /*
  * MAIN LOOP
  * -------------------------------------------------------------------------------------- END
  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
