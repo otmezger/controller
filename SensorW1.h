@@ -63,7 +63,7 @@ void SensorW1::SensorW1ini(byte sensorID[8], String parseID, signed int dT_max)
   _parseID = parseID;
   _dT_max = dT_max;
   _OneWireReadOK = true; // initialized with some value.
-  serialWriter.sendStatus("{\"message\":\"Going to initialize sensor\", \"sensorID\": \"" + parseID + "\", \"dT_max\": " + dT_max + ",\"addr\":\"" + getSensorIDString() + "\" }");
+  //serialWriter.sendStatus("{\"message\":\"Going to initialize sensor\", \"sensorID\": \"" + parseID + "\", \"dT_max\": " + dT_max + ",\"addr\":\"" + getSensorIDString() + "\" }");
   getSensorType();
   return;
 }
@@ -133,11 +133,11 @@ signed int SensorW1::getTFromBus(OneWire ds) {
   int i;
   byte data[12];
 
-  ds.reset();
-  ds.select(_sensorID);
-  ds.write(0x44, 1);        // start conversion, with parasite power on at the end
+  //ds.reset();
+  //ds.select(_sensorID);
+  //ds.write(0x44, 1);        // start conversion, with parasite power on at the end
 
-  delay(1000);     // maybe 750ms is enough, maybe not
+  //delay(1000);     // maybe 750ms is enough, maybe not
   // we might do a ds.depower() here, but the reset will take care of it.
 
   present = ds.reset();
