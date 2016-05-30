@@ -9,7 +9,7 @@
 #define DO_DEBUG_START_STOP_LOOP 0
 
 
-#define NMYSENSORS 10
+#define NMYSENSORS 6
 #define LEDPIN_OK 6
 
 #define CONTROLLER_ID "A1_0001"

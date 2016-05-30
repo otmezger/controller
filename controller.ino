@@ -2,9 +2,7 @@
 // this program pushes the sensor data to a php api.
 
 #include <SPI.h> /// no idea what this is... I think it's mandatory.
-//#include "/Users/olmo/Documents/Arduino/libraries/MAX31850_OneWire.h"
-//#include "OneWire.h" // i'd rather use this to include it in the folder
-#include <OneWire.h>  
+#include <OneWire.h> 
 #include <avr/pgmspace.h>
 #include "config.h"
 #include "SensorW1.h"
@@ -35,9 +33,7 @@ unsigned int ledPinKO = 7; // a red LED that shows problems.
  * I cant allocate all of them,otherwise the program will run crazy, possible a memory overflow or something.
  * 6 sensors works OK. 7 wont.
  */
-//SensorW1 mySensor0("28-005ccae60","WRfMbVcDBL", 0.25);
-//SensorW1 mySensor1("28-004bde0ce","wsuH8FMVwO", 0.25);
-//SensorW1 mySensor2("28-003adb7af","jsKTNJ2h38", 0.25);
+
 
 typedef struct {
   byte sensorAddress[8];
@@ -49,24 +45,6 @@ typedef struct {
 SensorW1 SensorObjects[NMYSENSORS]; // initialize with as much as possible.
 
 
-
-
-
-/*
-SensorW1 mySensor0("28-005ccae60","N3 f", 25); // dt_max unsigned int!!!
-SensorW1 mySensor1("28-005cd784c","nevera 4 frio", 25); //  APAGADO
-SensorW1 mySensor2("28-0062af8f9","C1 f", 25);// Congelador 1 -20 - frio
-SensorW1 mySensor3("28-0062c46d3","congelador 2 frio", 25); //
-SensorW1 mySensor4("28-0065d469b","congelador 2 caliente", 25); //  APAGADO
-SensorW1 mySensor5("28-0065c5b4f","C1 c", 25);// Congelador -20 - caliente
-SensorW1 mySensor6("28-005ccce1f","ambiente", 25);// Congelador -20 - caliente
-SensorW1 mySensor7("3b-000187513","horno 1", 50); // horno
-SensorW1 mySensor8("3b-000187513","horno 1", 50); // horno
-*/
-/*
- * DECLARE sensors
- * -------------------------------------------------------------------------------------- END
- */
 
 
 
@@ -146,105 +124,85 @@ void loop() { // put your main code here, to run repeatedly:
     } SensorDictionaryElement;*/
     /*
      * NEW SENSOR.
-     *    PARSE ID: G3JTRDta9I
-     *    NAME: Nevera
-     *    MACHINE: Nevera Principal @ olmo
+     *    PARSE ID: nMTOqQw1eA
+     *    NAME: Solar Watter heater 
+     *    MACHINE: Sensor 1
     */
     short iSensor = 0;
-    //{byte thisAddress[8] = {0x28, 0x71, 0xAB, 0xB5, 0x05, 0x00, 0x00, 0xD7};
-    {//byte thisAddress[8] = {0x28, 0x60, 0xAE, 0xCC, 0x05, 0x00, 0x00, 0x52};
-    byte thisAddress[8] = {0x28, 0x11, 0xC0, 0x29, 0x07, 0x00, 0x00, 0xC9};
+    
+    {
+    byte thisAddress[8] = {0x28, 0xF0, 0x49, 0xDD, 0x06, 0x00, 0x00, 0x3B};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "P9Vspkw3Gh";
+    MySensorDictionary[iSensor].sensorLocation = (String) "nMTOqQw1eA";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
      * NEW SENSOR.
-     *    PARSE ID: VBbBztL3IR
-     *    NAME: Congelador
-     *    MACHINE: Nevera Principal @ olmo
+     *    PARSE ID: MqGO5rBiAU
+     *    NAME: Solar Watter heater
+     *    MACHINE: Sensor 2
     */
     iSensor ++;
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0x1F, 0xCE, 0xCC, 0x05, 0x00, 0x00, 0xFF};
-    //byte thisAddress[8] = {0x28, 0x4C, 0x78, 0xCD, 0x05, 0x00, 0x00, 0xD4};
-    byte thisAddress[8] = {0x28, 0xDE, 0xCB, 0x29, 0x07, 0x00, 0x00, 0x02};
+    {
+    byte thisAddress[8] = {0x28, 0xBA, 0xBE, 0x5B, 0x06, 0x00, 0x00, 0xA6};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
     //MySensorDictionary[iSensor].sensorLocation = (String) "fMft50HAD0";
-    MySensorDictionary[iSensor].sensorLocation = (String) "NA3Ci9LnsD";
+    MySensorDictionary[iSensor].sensorLocation = (String) "MqGO5rBiAU";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
-     * NEW SENSOR.
-     *    PARSE ID: 7q0kBqY2aT
-     *    NAME: Caliente
-     *    MACHINE: Nevera Principal @ olmo
+      * NEW SENSOR.
+     *    PARSE ID: iPD9mItNep
+     *    NAME: Solar Watter heater
+     *    MACHINE: Sensor 3
     */
-    iSensor ++; // 28 D3 46 2C 6 0 0 45
+    iSensor ++; // 
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xC1, 0xC2, 0x29, 0x07, 0x00, 0x00, 0x8E};
+    byte thisAddress[8] = {0x28, 0x39, 0x15, 0xDE, 0x06, 0x00, 0x00, 0x0E};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "afSzNSM0kQ";
+    MySensorDictionary[iSensor].sensorLocation = (String) "iPD9mItNep";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     /*
-     * NEW SENSOR.
-     *    PARSE ID: zwiDCzlKUA
-     *    NAME: Ambiente
-     *    MACHINE: Congelador 7 
+      * NEW SENSOR.
+     *    PARSE ID: Ebi1bzfScE
+     *    NAME: Solar Watter heater
+     *    MACHINE: Sensor 4
     */
-    iSensor ++; // 28 4F 5B 5C 6 0 0 B1
+    iSensor ++; // 28 39 7F DD 6 0 0 2A
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xC9, 0x3D, 0xDD, 0x06, 0x00, 0x00, 0x32};
+
+    byte thisAddress[8] = {0x28, 0x39, 0x7F, 0xDD, 0x06, 0x00, 0x00, 0x2A};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "AjwYuCDaLr";
+    MySensorDictionary[iSensor].sensorLocation = (String) "Ebi1bzfScE";
     MySensorDictionary[iSensor].dt_max = 25;
     }
-        /*
-     * NEW SENSOR.
-     *    PARSE ID: NMnCopzz5I
-     *    NAME: Caliente
-     *    MACHINE: Congelador 8 
+    /*
+      * NEW SENSOR.
+     *    PARSE ID: Pswxv0Grgn
+     *    NAME: Solar Watter heater
+     *    MACHINE: Sensor 5
     */
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
+    iSensor ++; //28 75 F8 DD 6 0 0 B8
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x06, 0x1F, 0x29, 0x07, 0x00, 0x00, 0x26};
+
+    byte thisAddress[8] = {0x28, 0x75, 0xF8, 0xDD, 0x06, 0x00, 0x00, 0xB8};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "HW23Srup8q";
+    MySensorDictionary[iSensor].sensorLocation = (String) "Pswxv0Grgn";
     MySensorDictionary[iSensor].dt_max = 25;
     }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
+    /*
+      * NEW SENSOR.
+     *    PARSE ID: JRXyqlG0Ns
+     *    NAME: Solar Watter heater
+     *    MACHINE: Sensor 6
+    */
+    iSensor ++; //28 67 6 29 7 0 0 5D
     { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xED, 0xC8, 0x29, 0x07, 0x00, 0x00, 0xF8};
+
+    byte thisAddress[8] = {0x28, 0x67, 0x06, 0x29, 0x07, 0x00, 0x00, 0x5D};
     for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "sAEOCSFNer";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x13, 0xA6, 0x29, 0x07, 0x00, 0x00, 0x2A};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "I7bqd64Wu5";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xD3, 0xEC, 0xDD, 0x06, 0x00, 0x00, 0x35};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "ZDMOFZUCNN";
+    MySensorDictionary[iSensor].sensorLocation = (String) "JRXyqlG0Ns";
     MySensorDictionary[iSensor].dt_max = 25;
     }
     
