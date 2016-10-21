@@ -21,25 +21,26 @@ SerialWriter serialWriter;
 class SensorW1
 {
   private:
-    signed int  _T; // temperature in C/100
-    signed int _T_old;
-    //int _timeSinceOld;
+    signed int  _v; // temperature in C/100
+    signed int _v_old;
+    //int _VimeSinceOld;
     //long description
     //int _sensorCheck;// check every 3 runs
-    signed int _dT;
-    signed int _dT_max; // max T in sensorCheck
+    signed int _dv;
+    signed int _dv_max; // max T in sensorCheck
     byte _sensorID[8];
     String _parseID;
     //bool _networkMode; // this could be done better... but so far is ok.
     //bool _sdMode;
     bool _OneWireReadOK; //
-    byte _temptype; // the temperature sensor type.
+    byte _Sentype; // the temperature sensor type.
     boolean _active;
   public:
     SensorW1();
     void SensorW1ini(byte sensorID[8], String parseID, signed int dT_max);
     String getSensorIDString();
-    void updateTemperature(OneWire ds);
+    void updateValue(OneWire ds);
+    signed int getVFromA(byte _sensorIDA);
     signed int getTFromBus(OneWire ds);
     String getSensorType();
     void deactivate();
@@ -61,7 +62,7 @@ void SensorW1::SensorW1ini(byte sensorID[8], String parseID, signed int dT_max)
   }
   _active = true;
   _parseID = parseID;
-  _dT_max = dT_max;
+  _dv_max = dT_max;
   _OneWireReadOK = true; // initialized with some value.
   //serialWriter.sendStatus("{\"message\":\"Going to initialize sensor\", \"sensorID\": \"" + parseID + "\", \"dT_max\": " + dT_max + ",\"addr\":\"" + getSensorIDString() + "\" }");
   getSensorType();
@@ -76,7 +77,7 @@ void SensorW1::checkAllValues(){
     Serial.print(F(") ,parseID= "));
     Serial.print(_parseID);
     Serial.print(F(" and current temperature: "));
-    Serial.println((float)_T_old/100);
+    Serial.println((float)_v_old/100);
   }
 
 }
@@ -93,20 +94,24 @@ String SensorW1::getSensorType() {
   switch (_sensorID[0]) { // we could put this in the constructor of the object, but let's sacrify performace in favor of memory.
     case 0x10:
       SensorType = "DS18S20";
-      _temptype = TYPE_DS18S20;
+      _Sentype = TYPE_DS18S20;
       break;
     case 0x28:
       SensorType = "DS18B20";
-      _temptype = TYPE_DS18B20;
+      _Sentype = TYPE_DS18B20;
       break;
     case 0x22:
       SensorType = "DS1822";
-      _temptype = TYPE_DS18S22;
+      _Sentype = TYPE_DS18S22;
       break;
     // ADDED SUPPORT FOR MAX31850!
     case 0x3B:
       SensorType = "MAX31850";
-      _temptype = TYPE_MAX31850;
+      _Sentype = TYPE_MAX31850;
+      break;
+     case 0xff:
+      SensorType = "knock";
+      _Sentype = TYPE_knock;
       break;
     default:
       //Serial.println(F(""));
@@ -167,20 +172,20 @@ signed int SensorW1::getTFromBus(OneWire ds) {
 
   // Convert the data to actual temperature
   // because the result is a 16 bit signed integer, it should
-  // be stored to an "int16_t" type, which is always 16 bits
+  // be stored to an "int16_v" type, which is always 16 bits
   // even when compiled on a 32 bit processor.
   int16_t raw = (data[1] << 8) | data[0];
-  if (_temptype == TYPE_DS18S20) {
+  if (_Sentype == TYPE_DS18S20) {
     raw = raw << 3; // 9 bit resolution default
     if (data[7] == 0x10) {
       // "count remain" gives full 12 bit resolution
       raw = (raw & 0xFFF0) + 12 - data[6];
     }
-  } else if (_temptype == TYPE_MAX31850) {
+  } else if (_Sentype == TYPE_MAX31850) {
     //Serial.println(raw, HEX);
     if (raw & 0x01) { // specially for MAX31850;
       String stringOne = "{\"message\":\"Fault. cant be true.\", \"raw\": " + raw;
-      serialWriter.sendError(stringOne + "\"_temptype\": " + _temptype + "}");
+      serialWriter.sendError(stringOne + "\"_Sentype\": " + _Sentype + "}");
       return -999; //return now without setting _OneWireReadOK true.
     }
   } else {
@@ -196,19 +201,49 @@ signed int SensorW1::getTFromBus(OneWire ds) {
   return (signed int) (celsius * 100);
 }
 
-void SensorW1::updateTemperature(OneWire ds) {
-  // this function reads the temperature from the 1Wire bus and updates _T if the change was enough.
-  if (_active){
-    signed int _T = getTFromBus(ds); // in C/100;
+signed int SensorW1::getVFromA(byte _sensorIDA) {
+   // this function gets the value in the analog input dependig of the last byte of the sensor address, if the sensor is analog
+  float hertz;
+  if (_sensorIDA = 0x00){
+  hertz = analogRead(A0);
+  }
+   if (_sensorIDA = 0x01){
+   
+  hertz = analogRead(A1);
+  }
 
-    signed int original_T_old = _T_old;
-    //Serial.println("--- In update Temperature after process. Old Temp = " + String(_T_old) + ", Actual temp = " + String(_T));
+  
+  return (signed int) (hertz );
+  
+  
+}
+void SensorW1::updateValue(OneWire ds) {
+  
+  // this function reads the temperature from the 1Wire bus and updates _v if the change was enough.
+  if (_active){
+    signed int _v;
+
+    if (_sensorID[0]==0xff){  // this happends when the sensor  is analog sensor
+      
+     _v = getVFromA(_sensorID[7]);
+      
+    }
+    else{
+      
+     _v = getTFromBus(ds); // in C/100;  // this happends when the sensor  is one-wire
+      
+    }
+
+  
+      
+    signed int original_v_old = _v_old;
+    //Serial.println("--- In update Temperature after process. Old Temp = " + String(_v_old) + ", Actual temp = " + String(_v));
     bool updateSensor = false;
-    _dT = abs(_T - _T_old);
-    if (_dT >= _dT_max) {
+    _dv = abs(_v - _v_old);
+    if (_dv >= _dv_max) {
       // we need to update the sensor because it changed enough since last time.
-      // 1. update _T_old!
-      _T_old = _T;
+      // 1. update _v_old!
+      _v_old = _v;
       // 2. change updateSensor flag
       updateSensor = true;
     }
@@ -218,10 +253,10 @@ void SensorW1::updateTemperature(OneWire ds) {
         //Serial.print(getSensorIDString());
         Serial.print(getSensorPrettyName());
         Serial.print(F(" changed enough from "));
-        Serial.println(String((float)original_T_old/100) + " to " + String((float)_T/100));
+        Serial.println(String((float)original_v_old/100) + " to " + String((float)_v/100));
       }
 
-      serialWriter.sendData( _parseID,_T);
+      serialWriter.sendData( _parseID,_v);
 
 
 
