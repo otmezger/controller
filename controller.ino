@@ -10,11 +10,11 @@
 #include "SensorW1.h"
 
 boolean initialRun = true;
-short Nsensors = 0;
+short Nsensors =8;
 
 
 
-short NmySensors = NMYSENSORS;
+short NmySensors = 8;
 //int listOfSensors; // how to initialize as a vector without knowing iut's size?
 
 OneWire ds(5);  // on pin 10 (a 4.7K resistor is necessary)
@@ -42,33 +42,13 @@ unsigned int ledPinKO = 7; // a red LED that shows problems.
 typedef struct {
   byte sensorAddress[8];
   String sensorLocation;
-  unsigned int dt_max;
+  float dv_max;
 } SensorDictionaryElement;
 
-
-SensorW1 SensorObjects[NMYSENSORS]; // initialize with as much as possible.
-
-
-
-
-
+SensorW1 SensorObjects[9]; // initialize with  the number of sensors in the array "MySensorDictionary"
 /*
-SensorW1 mySensor0("28-005ccae60","N3 f", 25); // dt_max unsigned int!!!
-SensorW1 mySensor1("28-005cd784c","nevera 4 frio", 25); //  APAGADO
-SensorW1 mySensor2("28-0062af8f9","C1 f", 25);// Congelador 1 -20 - frio
-SensorW1 mySensor3("28-0062c46d3","congelador 2 frio", 25); //
-SensorW1 mySensor4("28-0065d469b","congelador 2 caliente", 25); //  APAGADO
-SensorW1 mySensor5("28-0065c5b4f","C1 c", 25);// Congelador -20 - caliente
-SensorW1 mySensor6("28-005ccce1f","ambiente", 25);// Congelador -20 - caliente
-SensorW1 mySensor7("3b-000187513","horno 1", 50); // horno
-SensorW1 mySensor8("3b-000187513","horno 1", 50); // horno
-*/
-/*
- * DECLARE sensors
- * -------------------------------------------------------------------------------------- END
+Sensorobject is the funtional array, it contains all the atributes and funtions for one-wire sensors and analog sensors
  */
-
-
 
 /*
  * -------------------------------------------------------------------------------------- START
@@ -81,7 +61,6 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(ledPinKO, OUTPUT);
   pinMode(ledPinOK, OUTPUT);
-
   digitalWrite(ledPinOK, LOW);
   digitalWrite(ledPinKO, LOW);
   digitalWrite(ledPin, ledPinStatus);
@@ -89,17 +68,10 @@ void setup() {
         //digitalWrite(ledPinOK, HIGH);
       //digitalWrite(ledPinKO, HIGH);
 
-  //ds.reset();
-  //Serial.println(" This Sensor ID= " + mySensor1.getSensorID());
+  
   delay(500); // not actually needed, just for stability... or whatever. no need to rush.
-  // discoverOneWireDevices(); for finding 
-
-
-
-
+  
 }
-
-
 
 
 /*
@@ -116,143 +88,48 @@ void loop() { // put your main code here, to run repeatedly:
   // loop the LED
   ledPinStatus = !ledPinStatus;
   digitalWrite(ledPin, ledPinStatus);
-  //Serial.println();
-  //Serial.print(F("In loop with initial run: "));
-  //Serial.println(initialRun);
+  
   if (initialRun) {
     serialWriter.sendStatus("\"Initial run\"");
     // this code runs only on the very first run
-    /*
-     * here we initialize the variables SensorDictionary. I don't do it in setup because I don't know
-     * how to declare it outside without knowing the number of elements...
-     * so for simplicity, right now, I have everything here.
-     */
-
-    SensorDictionaryElement MySensorDictionary[NmySensors]; // All our sensors, doenst matter if they are connected or not.
-    /*
-     *  this array contains all our sensors and it's locations.
-     *
-     *  we need another similar dictionary, build dynamically which contains ONLY the elements f
-     *  rom this one that are present in the bus.
-     *  Their index order does not matter.
-     *
-     *  Adding a new sensor will be easy. we put it in MySensorsDictionary,
-     *  and then it will appear automatically in SensorDictionary if it was found on the bus.
-     */
-    /*typedef struct {
-      //byte sensorAddress[8];
-      String sensorLocation;
-      unsigned int dt_max;
-    } SensorDictionaryElement;*/
-    /*
-     * NEW SENSOR.
-     *    PARSE ID: G3JTRDta9I
-     *    NAME: Nevera
-     *    MACHINE: Nevera Principal @ olmo
-    */
-    short iSensor = 0;
-    //{byte thisAddress[8] = {0x28, 0x71, 0xAB, 0xB5, 0x05, 0x00, 0x00, 0xD7};
-    {//byte thisAddress[8] = {0x28, 0x60, 0xAE, 0xCC, 0x05, 0x00, 0x00, 0x52};
-    byte thisAddress[8] = {0x28, 0x11, 0xC0, 0x29, 0x07, 0x00, 0x00, 0xC9};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "P9Vspkw3Gh";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-    /*
-     * NEW SENSOR.
-     *    PARSE ID: VBbBztL3IR
-     *    NAME: Congelador
-     *    MACHINE: Nevera Principal @ olmo
-    */
-    iSensor ++;
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0x1F, 0xCE, 0xCC, 0x05, 0x00, 0x00, 0xFF};
-    //byte thisAddress[8] = {0x28, 0x4C, 0x78, 0xCD, 0x05, 0x00, 0x00, 0xD4};
-    byte thisAddress[8] = {0x28, 0xDE, 0xCB, 0x29, 0x07, 0x00, 0x00, 0x02};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    //MySensorDictionary[iSensor].sensorLocation = (String) "fMft50HAD0";
-    MySensorDictionary[iSensor].sensorLocation = (String) "NA3Ci9LnsD";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-    /*
-     * NEW SENSOR.
-     *    PARSE ID: 7q0kBqY2aT
-     *    NAME: Caliente
-     *    MACHINE: Nevera Principal @ olmo
-    */
-    iSensor ++; // 28 D3 46 2C 6 0 0 45
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xC1, 0xC2, 0x29, 0x07, 0x00, 0x00, 0x8E};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "afSzNSM0kQ";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-    /*
-     * NEW SENSOR.
-     *    PARSE ID: zwiDCzlKUA
-     *    NAME: Ambiente
-     *    MACHINE: Congelador 7 
-    */
-    iSensor ++; // 28 4F 5B 5C 6 0 0 B1
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xC9, 0x3D, 0xDD, 0x06, 0x00, 0x00, 0x32};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "AjwYuCDaLr";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-        /*
-     * NEW SENSOR.
-     *    PARSE ID: NMnCopzz5I
-     *    NAME: Caliente
-     *    MACHINE: Congelador 8 
-    */
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x06, 0x1F, 0x29, 0x07, 0x00, 0x00, 0x26};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "HW23Srup8q";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xED, 0xC8, 0x29, 0x07, 0x00, 0x00, 0xF8};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "sAEOCSFNer";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0x13, 0xA6, 0x29, 0x07, 0x00, 0x00, 0x2A};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "I7bqd64Wu5";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
-
-    iSensor ++; //28 AA 47 DD 6 0 0 78
-
-    { // putting thisAddress in a "lower scope" so it can be reassigned http://www.cplusplus.com/forum/beginner/82290/#msg441681
-    //byte thisAddress[8] = {0x28, 0xD3, 0x46, 0x2C, 0x06, 0x00, 0x00, 0x45};
-    byte thisAddress[8] = {0x28, 0xD3, 0xEC, 0xDD, 0x06, 0x00, 0x00, 0x35};
-    for (short ii = 0; ii < 8; ii++) {MySensorDictionary[iSensor].sensorAddress[ii] = thisAddress[ii];}
-    MySensorDictionary[iSensor].sensorLocation = (String) "ZDMOFZUCNN";
-    MySensorDictionary[iSensor].dt_max = 25;
-    }
     
+    /*
+   Fist we create each element, with id address , id parse and DV
+   Here is where we are going to wrinte new elements (to setup the arduino)
+    */
+SensorDictionaryElement mySensor0={{0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}, "xxxpoxxxxx",  25};
+SensorDictionaryElement mySensor1={{0x28, 0x11, 0xC0, 0x29, 0x07, 0x00, 0x00, 0xC9}, "P9Vspkw3Gh", 25};
+SensorDictionaryElement mySensor2={{0x28, 0xDE, 0xCB, 0x29, 0x07, 0x00, 0x00, 0x02}, "NA3Ci9LnsD", 25};
+SensorDictionaryElement mySensor3={{0x28, 0xC1, 0xC2, 0x29, 0x07, 0x00, 0x00, 0x8E}, "afSzNSM0kQ", 25};
+SensorDictionaryElement mySensor4={{0x28, 0xC9, 0x3D, 0xDD, 0x06, 0x00, 0x00, 0x32}, "AjwYuCDaLr", 25};
+SensorDictionaryElement mySensor5={{0x28, 0x06, 0x1F, 0x29, 0x07, 0x00, 0x00, 0x26}, "HW23Srup8q", 25};
+SensorDictionaryElement mySensor6={{0x28, 0xED, 0xC8, 0x29, 0x07, 0x00, 0x00, 0xF8}, "sAEOCSFNer", 25};
+SensorDictionaryElement mySensor7={{0x28, 0x13, 0xA6, 0x29, 0x07, 0x00, 0x00, 0x2A}, "I7bqd64Wu5", 25};
+SensorDictionaryElement mySensor8={{0x28, 0xD3, 0xEC, 0xDD, 0x06, 0x00, 0x00, 0x35}, "ZDMOFZUCNN", 25};
+
+
+  /*
+     Now create the array MySensorDictionary than includes each sensor previous
+    */
+SensorDictionaryElement MySensorDictionary[]={mySensor0,mySensor1,mySensor2,mySensor3,mySensor4,mySensor5,mySensor6,mySensor7,mySensor8};
+
+
+ /*
+    we will set the array SensorObjects(funtional array) with the sensor in MySensorDictionary(configurational array)
+    */
+    for (short iSensor = 0; iSensor <= NmySensors; iSensor++) {
+     
+    SensorObjects[iSensor].SensorW1ini(MySensorDictionary[iSensor].sensorAddress, MySensorDictionary[iSensor].sensorLocation,MySensorDictionary[iSensor].dv_max );
+    
+    SensorObjects[iSensor].checkAllValues();
+    }
+
     
 
     Nsensors = findNumberOfSensorsInBus(ds);
-    // now we know how many sensors are there.
-    // now we need to populate the array listOfSensors;
+     Nsensors =  Nsensors +1;
+    // now we know how many sensors are in the one-wire.
+    // the +1, is the number of analog sensors, it must be seted when add a new analog sensor ;
     
     serialWriter.sendStatus("{\"message\":\"Found Sensors\", \"amount\": " + String(Nsensors) + "}");
     /*Serial.print(F("-- in loop: We got "));
@@ -276,7 +153,9 @@ void loop() { // put your main code here, to run repeatedly:
     Serial.print(Nsensors);
     Serial.println(F(" sensors"));*/
     //serialWriter.sendStatus("{\"message\":\"Found Sensors\", \"amount\": " + Nsensors + "}}");
+    
     for (short iSensor = 0; iSensor < Nsensors; iSensor++) {
+     
       if (DO_DEBUG_MESSAGES){
         Serial.print(F("--- ---> Sensor Nr. "));
         Serial.print(iSensor);
@@ -310,7 +189,7 @@ void loop() { // put your main code here, to run repeatedly:
           //serialWriter.sendStatus("{\"message\":\"Got a match with Dic Element\", \"sensorID\": \"" + MySensorDictionary[iSensorDict].sensorLocation + "\", \"sensor\"}}");
           //Serial.print(F("--- ---- ---> Got a match with Dictionary element Nr. "));
           //Serial.println(iSensorDict);
-          SensorDictionary[iSensor].dt_max = MySensorDictionary[iSensorDict].dt_max;
+          SensorDictionary[iSensor].dv_max = MySensorDictionary[iSensorDict].dv_max;
           SensorDictionary[iSensor].sensorLocation = MySensorDictionary[iSensorDict].sensorLocation;
           foundMatch = true;
         }else{
@@ -326,14 +205,19 @@ void loop() { // put your main code here, to run repeatedly:
       }
       // at this point, if the arduino continues, is because we matched all sensors with the library. this is good :-)
       // now let's build the objects.
-      SensorObjects[iSensor].SensorW1ini(SensorDictionary[iSensor].sensorAddress, SensorDictionary[iSensor].sensorLocation,SensorDictionary[iSensor].dt_max );
+      //SensorObjects[iSensor].SensorW1ini(SensorDictionary[iSensor].sensorAddress, SensorDictionary[iSensor].sensorLocation,SensorDictionary[iSensor].dv_max );
+      
       delay(500);
-      SensorObjects[iSensor].checkAllValues(); // 2DO: Why doesnt this here print anything interesting?
+      //SensorObjects[iSensor].checkAllValues(); // 2DO: Why doesnt this here print anything interesting?
     } // end looping over the results.
-
+    
+    
 
     initialRun = false;
-  } else {
+    
+  } 
+    else {
+    
     //Serial.println(F("--> NOT Initial run"));
     // this code runs only from the 2 run.
     if (DO_DEBUG_START_STOP_LOOP) {
@@ -345,20 +229,21 @@ void loop() { // put your main code here, to run repeatedly:
     ds.reset();
     ds.write(0xCC); //Skip ROM to broadcast to all sensors in bus.
     //delay(100);
-    ds.write(0x44,1); //Start Temperature conversion (for all sensors at the same time after Skip ROM 
-    delay(750); //Delay for Temperature conversion at 12-bit resolution
+    ds.write(0x44,1); //Start value conversion (for all sensors at the same time after Skip ROM 
+    delay(750); //Delay for value conversion at 12-bit resolution
     //ds.depower(); //Release the one wire bus
     //////////////////////////////////////////////////////////////////////
     for (short iSensor = 0; iSensor < Nsensors; iSensor++) {
-      //Serial.println(iSensor);
-      SensorObjects[iSensor].updateTemperature(ds);
+      
+     // Serial.println(Nsensors);    // Chekear cantidad de sensores que se van a revisar
+      SensorObjects[iSensor].updateValue(ds);
       SensorObjects[iSensor].checkAllValues();
     }
     //t = millis() - ti;
     //Serial.println("Tiempo: ");
     //Serial.println(t);
     
-    if (DO_DEBUG_START_STOP_LOOP) {
+    if (!DO_DEBUG_START_STOP_LOOP) {
       Serial.println(F("------------- END"));
     }
     delay(10);
@@ -394,7 +279,7 @@ void loop() { // put your main code here, to run repeatedly:
 *
 * This function has the goal of reading through the 1 Wire bus and returning an array with
 * all values for all sensors found in the array. The code has been taken from
-* https://github.com/adafruit/MAX31850_OneWire/tree/master/examples/MAX31850_Temperature
+* https://github.com/adafruit/MAX31850_OneWire/tree/master/examples/MAX31850_Vemperature
 */
 
 byte findNumberOfSensorsInBus(OneWire ds) {
