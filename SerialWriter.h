@@ -35,7 +35,7 @@ void SerialWriter::sendStatus(String myString){
      }
 
      You can also embedd an object into the "string", will produce
-     input : {\"message\":\"Going to initialize sensor\", \"sensorID\": \"" + parseID + "\", \"dT_max\": \"" + dT_max + "\"}}
+     input : {\"message\":\"Going to initialize sensor\", \"sensorID\": \"" + parseID + "\", \"dv_max\": \"" + dv_max + "\"}}
 
      output (in one line):
      {
@@ -43,7 +43,7 @@ void SerialWriter::sendStatus(String myString){
        "data":{
          "message": "my Message",
          "sensorID": "parseID",
-         "dT_max": 123
+         "dv_max": 123
        }
      }
 
@@ -62,6 +62,7 @@ void SerialWriter::sendError(String myString){
 }
 
 void SerialWriter::sendData(String sensorID, int value){
+  Serial.println(sensorID);
   digitalWrite(ledPinOK, HIGH);
   Serial.println("{\"type\":\"dataPoint\",\"cID\":\"" + cID +  "\", \"data\":{\"sensorID\": \"" + sensorID + "\", \"value\": " + value + "}}");
   digitalWrite(ledPinOK, LOW);
